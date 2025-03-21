@@ -1,26 +1,76 @@
-@import "tailwindcss";
+/* src/app/globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --foreground-rgb: 139, 87, 42; /* カウシェファームの標準テキスト色（茶色） */
+  --background-rgb: 246, 246, 246; /* カウシェファームの背景色 */
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+  font-family: 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', Meiryo, メイリオ, sans-serif;
+  overflow: hidden;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+/* カウシェファーム風のボタンスタイル */
+.kaushe-btn-primary {
+  @apply bg-kaushe-green text-white font-normal py-4 rounded-full text-xl shadow-sm active:bg-kaushe-green-dark;
+}
+
+.kaushe-btn-secondary {
+  @apply bg-white border border-kaushe-green text-kaushe-green font-normal py-4 rounded-full text-xl shadow-sm;
+}
+
+/* カウシェファーム風のモーダルスタイル */
+.kaushe-modal {
+  @apply bg-white w-full mx-4 rounded-xl overflow-hidden shadow-md;
+}
+
+.kaushe-modal-header {
+  @apply bg-kaushe-green text-white font-normal text-center py-3 text-xl;
+}
+
+/* iOS下部のセーフエリア対応 */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* カウシェファーム風のテキストスタイル */
+.text-kaushe-title {
+  @apply text-kaushe-brown font-bold text-lg;
+}
+
+.text-kaushe-body {
+  @apply text-kaushe-brown font-normal;
+}
+
+/* アニメーション */
+@keyframes kaushe-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-kaushe-fade-in {
+  animation: kaushe-fade-in 0.3s ease-in;
+}
+
+@keyframes kaushe-pop {
+  0% { transform: scale(0.9); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.animate-kaushe-pop {
+  animation: kaushe-pop 0.3s ease-out;
 }

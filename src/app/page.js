@@ -1,103 +1,252 @@
-import Image from "next/image";
+// src/app/page.js
+'use client';
+import Image from 'next/image';
+import { useState, useEffect } from 'react';
+import Header from '@/components/Header';
+import PlantArea from '@/components/PlantArea';
+import ControlPanel from '@/components/ControlPanel';
+import SeedSelectionModal from '@/components/modals/SeedSelectionModal';
+import PlantConfirmModal from '@/components/modals/PlantConfirmModal';
+import NamingModal from '@/components/modals/NamingModal';
+import Toast from '@/components/Toast';
+
+// 植物データ - カウシェファームに合わせて調整
+const plantData = [
+  { 
+    id: 'coffee', 
+    name: 'コーヒー', 
+    difficulty: 3,
+    growthDays: 7,
+    waterNeeded: 3,
+    value: 350
+  },
+  { 
+    id: 'nuts', 
+    name: 'ナッツ', 
+    difficulty: 3,
+    growthDays: 6,
+    waterNeeded: 2,
+    value: 300
+  },
+  { 
+    id: 'rice', 
+    name: 'ライス', 
+    difficulty: 2,
+    growthDays: 5,
+    waterNeeded: 4,
+    value: 250
+  },
+  { 
+    id: 'cocoa', 
+    name: 'ココア', 
+    difficulty: 4,
+    growthDays: 8,
+    waterNeeded: 3,
+    value: 450
+  }
+];
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  // 状態管理
+  const [gameState, setGameState] = useState('initial'); // initial, seedSelection, plantingConfirm, naming, planted
+  const [selectedPlant, setSelectedPlant] = useState(null);
+  const [plantName, setPlantName] = useState('');
+  const [waterAmount, setWaterAmount] = useState(30.00);
+  const [plantProgress, setPlantProgress] = useState(0);
+  const [toast, setToast] = useState(null);
+  const [wateringActive, setWateringActive] = useState(false);
+  const [showPlantSuccess, setShowPlantSuccess] = useState(false);
+  const [showWaterHint, setShowWaterHint] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // トースト通知を表示する関数
+  const showToast = (message, duration = 3000) => {
+    setToast(message);
+    setTimeout(() => setToast(null), duration);
+  };
+
+  // 状態遷移関数
+  const goToSeedSelection = () => {
+    setGameState('seedSelection');
+  };
+
+  const selectPlant = (plant) => {
+    setSelectedPlant(plant);
+    setGameState('plantingConfirm');
+  };
+
+  const confirmPlanting = () => {
+    setGameState('naming');
+  };
+
+  const namePlant = () => {
+    if (!plantName.trim()) {
+      // カウシェファームでは強制入力ではなく、空であればデフォルト名が使われる
+      setPlantName('こんにちわ');
+    }
+    
+    setGameState('planted');
+    setShowPlantSuccess(true);
+    
+    // 植え付け成功メッセージを3秒表示した後、水やりヒントを表示
+    setTimeout(() => {
+      setShowPlantSuccess(false);
+      setTimeout(() => {
+        setShowWaterHint(true);
+        setTimeout(() => {
+          setShowWaterHint(false);
+        }, 3000);
+      }, 500);
+    }, 3000);
+  };
+
+  const handleBack = () => {
+    switch (gameState) {
+      case 'seedSelection':
+        setGameState('initial');
+        break;
+      case 'plantingConfirm':
+        setGameState('seedSelection');
+        setSelectedPlant(null);
+        break;
+      case 'naming':
+        setGameState('plantingConfirm');
+        setPlantName('');
+        break;
+      default:
+        setGameState('initial');
+    }
+  };
+
+  const startWatering = () => {
+    if (gameState !== 'planted') return;
+    
+    if (waterAmount <= 0) {
+      showToast('水がありません');
+      return;
+    }
+    
+    if (plantProgress >= 100) {
+      showToast('この植物はすでに完全に成長しています');
+      return;
+    }
+    
+    setWateringActive(true);
+    setTimeout(() => {
+      setWateringActive(false);
+      setWaterAmount(prev => Math.max(0, prev - 5));
+      setPlantProgress(prev => Math.min(100, prev + 10));
+    }, 1000);
+  };
+
+  // 初期画面の植えるボタン（カウシェファーム風）
+ // src/app/page.js 内の PlantButton コンポーネントを更新
+
+ const PlantButton = () => (
+  
+<div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 w-64">
+  <button
+    onClick={goToSeedSelection}
+    className="w-full bg-gradient-to-r from-kaushe-green to-emerald-400 text-white font-bold text-xl py-4 rounded-full 
+               shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 
+               border-2 border-white flex items-center justify-center space-x-2 animate-pulse"
+  >
+    <span className="inline-block">🌱</span>
+    <span>作物を植える</span>
+    <span className="inline-block">🌱</span>
+  </button>
+  <div
+    className="mt-2 text-center text-kaushe-brown bg-white/80 rounded-full py-1 px-2 text-sm 
+               animate-bounce shadow-md"
+  >
+    タップしてスタートしよう！
+  </div>
+</div>
+
+);
+
+  return (
+    <main className="relative h-screen w-full overflow-hidden" 
+>
+      {/* ここに背景イラスト（クライアント側で提供） */}
+      <div className="absolute inset-0">
+      <Image
+      src="/background.jpg"
+      alt="背景画像"
+      fill
+      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      style={{
+        objectFit: 'cover',
+        objectPosition: 'center'
+      }}
+      priority
+    />
+      </div>
+
+      {/* ヘッダー */}
+      <Header onBack={handleBack} showBackButton={['seedSelection', 'plantingConfirm', 'naming'].includes(gameState)} />
+
+      {/* 植物エリア */}
+      <PlantArea 
+        isPlanted={gameState === 'planted'} 
+        plantName={plantName || 'こんにちわ'} 
+        progress={plantProgress} 
+      />
+
+      {/* 操作パネル */}
+      <ControlPanel 
+        waterAmount={waterAmount} 
+        wateringActive={wateringActive}
+        onWater={startWatering}
+        isPlanted={gameState === 'planted'}
+      />
+
+      {/* トースト通知 */}
+      {toast && <Toast message={toast} />}
+
+      {/* 植え付け成功メッセージ */}
+      {showPlantSuccess && (
+        <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 bg-white rounded-full py-3 px-8 border border-kaushe-border shadow-md">
+          <p className="text-kaushe-brown font-medium text-center text-lg">作物が植えられたよ！</p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      )}
+
+      {/* 水やりヒント */}
+      {showWaterHint && (
+        <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 bg-white rounded-full py-3 px-8 border border-kaushe-border shadow-md">
+          <p className="text-kaushe-brown font-medium text-center text-lg">作物を育てるにはお水が必要！</p>
+          <p className="text-kaushe-brown font-normal text-center text-base mt-1">おや、バケツに水が貯まってるよ<br/>くんでみよう</p>
+        </div>
+      )}
+
+      {/* 初期画面のボタン */}
+      {gameState === 'initial' && <PlantButton />}
+
+      {/* モーダル */}
+      {gameState === 'seedSelection' && (
+        <SeedSelectionModal 
+          plants={plantData} 
+          onSelect={selectPlant}
+          onCancel={handleBack}
+        />
+      )}
+
+      {gameState === 'plantingConfirm' && selectedPlant && (
+        <PlantConfirmModal 
+          plant={selectedPlant} 
+          onConfirm={confirmPlanting}
+          onCancel={handleBack}
+        />
+      )}
+
+      {gameState === 'naming' && selectedPlant && (
+        <NamingModal 
+          plant={selectedPlant}
+          value={plantName}
+          onChange={setPlantName}
+          onConfirm={namePlant}
+          onCancel={handleBack}
+        />
+      )}
+    </main>
   );
 }
