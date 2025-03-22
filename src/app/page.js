@@ -179,6 +179,9 @@ export default function Home() {
       {/* ヘッダー */}
       <Header onBack={handleBack} showBackButton={['seedSelection', 'plantingConfirm', 'naming'].includes(gameState)} />
 
+      {/* クエストチャレンジボタンとパネル */}
+     
+
       {/* 植物エリア */}
       <PlantArea 
         isPlanted={gameState === 'planted'} 
