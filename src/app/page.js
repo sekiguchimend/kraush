@@ -9,40 +9,37 @@ import SeedSelectionModal from '@/components/modals/SeedSelectionModal';
 import PlantConfirmModal from '@/components/modals/PlantConfirmModal';
 import NamingModal from '@/components/modals/NamingModal';
 import Toast from '@/components/Toast';
+import CuteMessage from '@/components/CuteMessage';
 
-// 植物データ - カウシェファームに合わせて調整
+// 植物データの定義
 const plantData = [
-  { 
-    id: 'coffee', 
-    name: 'コーヒー', 
-    difficulty: 3,
-    growthDays: 7,
-    waterNeeded: 3,
-    value: 350
+  {
+    id: 1,
+    name: 'トマト',
+    icon: '🍅',
+    description: '栄養たっぷりの赤い野菜。水やりをしっかりしよう！',
+    growthDays: 7
   },
-  { 
-    id: 'nuts', 
-    name: 'ナッツ', 
-    difficulty: 3,
-    growthDays: 6,
-    waterNeeded: 2,
-    value: 300
+  {
+    id: 2,
+    name: 'にんじん',
+    icon: '🥕',
+    description: 'みずみずしい根菜。健康な土壌を好みます。',
+    growthDays: 5
   },
-  { 
-    id: 'rice', 
-    name: 'ライス', 
-    difficulty: 2,
-    growthDays: 5,
-    waterNeeded: 4,
-    value: 250
+  {
+    id: 3,
+    name: 'とうもろこし',
+    icon: '🌽',
+    description: '背が高く育つ穀物。たくさんのお日様が必要！',
+    growthDays: 10
   },
-  { 
-    id: 'cocoa', 
-    name: 'ココア', 
-    difficulty: 4,
-    growthDays: 8,
-    waterNeeded: 3,
-    value: 450
+  {
+    id: 4,
+    name: 'いちご',
+    icon: '🍓',
+    description: '甘くてジューシーな果物。優しく育てよう。',
+    growthDays: 6
   }
 ];
 
@@ -139,47 +136,44 @@ export default function Home() {
   };
 
   // 初期画面の植えるボタン（カウシェファーム風）
- // src/app/page.js 内の PlantButton コンポーネントを更新
-
- const PlantButton = () => (
-  
-<div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 w-64">
-  <button
-    onClick={goToSeedSelection}
-    className="w-full bg-gradient-to-r from-kaushe-green to-emerald-400 text-white font-bold text-xl py-4 rounded-full 
-               shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 
-               border-2 border-white flex items-center justify-center space-x-2 animate-pulse"
-  >
-    <span className="inline-block">🌱</span>
-    <span>作物を植える</span>
-    <span className="inline-block">🌱</span>
-  </button>
-  <div
-    className="mt-2 text-center text-kaushe-brown bg-white/80 rounded-full py-1 px-2 text-sm 
-               animate-bounce shadow-md"
-  >
-    タップしてスタートしよう！
-  </div>
-</div>
-
-);
+  const PlantButton = () => (
+    <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 w-64">
+      <button
+        onClick={goToSeedSelection}
+        className="w-full bg-gradient-to-r from-kaushe-green to-emerald-400 text-white font-bold text-xl py-4 rounded-full 
+                   shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 
+                   border-2 border-white flex items-center justify-center space-x-2 animate-pulse"
+        style={{ fontFamily: '"Mochiy Pop One", "M PLUS Rounded 1c", sans-serif' }}
+      >
+        <span className="inline-block">🌱</span>
+        <span>作物を植える</span>
+        <span className="inline-block">🌱</span>
+      </button>
+      <div
+        className="mt-2 text-center text-kaushe-brown bg-white/80 rounded-full py-1 px-4 text-sm 
+                   animate-bounce shadow-md"
+        style={{ fontFamily: '"M PLUS Rounded 1c", sans-serif' }}
+      >
+        タップしてスタートしよう！
+      </div>
+    </div>
+  );
 
   return (
-    <main className="relative h-screen w-full overflow-hidden" 
->
+    <main className="relative h-screen w-full overflow-hidden">
       {/* ここに背景イラスト（クライアント側で提供） */}
       <div className="absolute inset-0">
-      <Image
-      src="/background.jpg"
-      alt="背景画像"
-      fill
-      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-      style={{
-        objectFit: 'cover',
-        objectPosition: 'center'
-      }}
-      priority
-    />
+        <Image
+          src="/background.jpg"
+          alt="背景画像"
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          style={{
+            objectFit: 'cover',
+            objectPosition: 'center'
+          }}
+          priority
+        />
       </div>
 
       {/* ヘッダー */}
@@ -190,6 +184,8 @@ export default function Home() {
         isPlanted={gameState === 'planted'} 
         plantName={plantName || 'こんにちわ'} 
         progress={plantProgress} 
+        plant={selectedPlant} // selectedPlantを渡す
+
       />
 
       {/* 操作パネル */}
@@ -203,19 +199,21 @@ export default function Home() {
       {/* トースト通知 */}
       {toast && <Toast message={toast} />}
 
-      {/* 植え付け成功メッセージ */}
+      {/* 植え付け成功メッセージ (位置は水やりヒントと同じ) */}
       {showPlantSuccess && (
-        <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 bg-white rounded-full py-3 px-8 border border-kaushe-border shadow-md">
-          <p className="text-kaushe-brown font-medium text-center text-lg">作物が植えられたよ！</p>
-        </div>
+        <CuteMessage 
+          title="作物が植えられたよ！" 
+          animationType="bounce"
+        />
       )}
 
       {/* 水やりヒント */}
       {showWaterHint && (
-        <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 bg-white rounded-full py-3 px-8 border border-kaushe-border shadow-md">
-          <p className="text-kaushe-brown font-medium text-center text-lg">作物を育てるにはお水が必要！</p>
-          <p className="text-kaushe-brown font-normal text-center text-base mt-1">おや、バケツに水が貯まってるよ<br/>くんでみよう</p>
-        </div>
+        <CuteMessage 
+          title="作物を育てるにはお水が必要！" 
+          subtext="おや、バケツに水が貯まってるよ くんでみよう" 
+          animationType="pulse"
+        />
       )}
 
       {/* 初期画面のボタン */}

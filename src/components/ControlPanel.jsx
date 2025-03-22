@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-
+import Image from 'next/image';
 const ControlPanel = ({ waterAmount, wateringActive, onWater, isPlanted }) => {
   return (
     <div className="absolute bottom-0 left-0 w-full p-4">
@@ -29,21 +29,20 @@ const ControlPanel = ({ waterAmount, wateringActive, onWater, isPlanted }) => {
         
         {/* ジョウロボタン - イラストはクライアント側で提供 */}
         <div className="flex flex-col items-center">
-          <button 
-            className={`w-16 h-16 rounded-full mb-1 focus:outline-none ${
-              !isPlanted ? 'opacity-50' : ''
-            } ${wateringActive ? 'animate-bounce' : ''}`}
-            onClick={onWater}
-            disabled={!isPlanted}
-          >
-            <div className="w-full h-full rounded-full flex items-center justify-center">
-              {/* ジョウロのイラスト（クライアント側で提供） */}
-            </div>
-          </button>
-          <div className="bg-white rounded-lg px-3 py-1 shadow-sm border border-kaushe-border">
-            <span className="font-normal text-sm">0 g</span>
-          </div>
-        </div>
+          <div className='w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center border-4 border-white shadow-md'>
+        <Image 
+        src="/joro2.png" 
+        width={60} 
+        height={60} 
+        alt="じょうろ"
+        className="object-contain"
+      />
+      </div>
+  <div className="bg-white rounded-lg px-3 py-1 shadow-sm border border-gray-200 ">
+ 
+    <span className="font-bold text-sm">0 g</span>
+  </div>
+</div>
       </div>
     </div>
   );
