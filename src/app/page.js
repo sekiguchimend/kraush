@@ -10,6 +10,7 @@ import PlantConfirmModal from '@/components/modals/PlantConfirmModal';
 import NamingModal from '@/components/modals/NamingModal';
 import Toast from '@/components/Toast';
 import CuteMessage from '@/components/CuteMessage';
+import CharacterSelection from '@/components/CharacterSelection';
 
 // 植物データの定義
 const plantData = [
@@ -45,6 +46,7 @@ const plantData = [
 
 export default function Home() {
   // 状態管理
+  const [coins, setCoins] = useState(1000); // コイン所持数の初期値
   const [gameState, setGameState] = useState('initial'); // initial, seedSelection, plantingConfirm, naming, planted
   const [selectedPlant, setSelectedPlant] = useState(null);
   const [plantName, setPlantName] = useState('');
@@ -54,13 +56,28 @@ export default function Home() {
   const [wateringActive, setWateringActive] = useState(false);
   const [showPlantSuccess, setShowPlantSuccess] = useState(false);
   const [showWaterHint, setShowWaterHint] = useState(false);
+  const [selectedCharacter, setSelectedCharacter] = useState(null);
 
   // トースト通知を表示する関数
   const showToast = (message, duration = 3000) => {
     setToast(message);
     setTimeout(() => setToast(null), duration);
   };
-
+  const handleSelectCharacter = (character) => {
+    // 現在選択されているキャラクターと違う場合のみコインを消費
+    if (selectedCharacter && selectedCharacter.id !== character.id && character.price > 0) {
+      // コインを消費
+      setCoins(prev => prev - character.price);
+      // トースト通知を表示
+      showToast(`${character.name}を${character.price}コインで購入しました！`);
+    } else if (!selectedCharacter) {
+      // 初めてのキャラクター選択
+      showToast(`${character.name}があなたの畑を手伝ってくれるよ！`);
+    }
+    
+    setSelectedCharacter(character);
+  };
+  
   // 状態遷移関数
   const goToSeedSelection = () => {
     setGameState('seedSelection');
@@ -180,7 +197,12 @@ export default function Home() {
       <Header onBack={handleBack} showBackButton={['seedSelection', 'plantingConfirm', 'naming'].includes(gameState)} />
 
       {/* クエストチャレンジボタンとパネル */}
-     
+      {gameState === 'planted' && (
+        <CharacterSelection 
+        onSelectCharacter={handleSelectCharacter} 
+        coins={coins}
+        />
+      )}
 
       {/* 植物エリア */}
       <PlantArea 
