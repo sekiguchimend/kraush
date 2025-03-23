@@ -31,9 +31,9 @@ const characterData = [
   },
   {
     id: 4,
-    name: 'つぶつぶ',
-    gifSrc: '/characters/character4.gif',
-    price: 2000,
+    name: 'うさ',
+    gifSrc: '/rat.gif',
+    price: 1000,
     bonus: '収穫量+20%',
     feature: '特別アイテム入手確率UP'
   },
