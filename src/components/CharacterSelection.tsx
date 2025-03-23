@@ -24,7 +24,7 @@ const characterData = [
   {
     id: 3,
     name: 'ふわり',
-    gifSrc: '/characters/character3.gif',
+    gifSrc: '/camp.gif',
     price: 1000,
     bonus: '成長速度+15%',
     feature: '収穫時間短縮'
