@@ -14,8 +14,8 @@ const PlantArea = ({ isPlanted, plantName, progress, plant }) => {
     if (progress < 30) {
       return {
         useCustomImage: true,
-        icon: "/bean.png",
-        containerClass: "w-50 h-50"
+        icon: "/kabu.png",
+        containerClass: "w-32 h-32"
       };
     } else if (progress < 60) {
       return {
@@ -49,8 +49,8 @@ const PlantArea = ({ isPlanted, plantName, progress, plant }) => {
               <Image 
                 src={plantImage}
                 alt={plantAltText}
-                width={110}
-                height={110}
+                width={50}
+                height={50}
                 className="object-contain drop-shadow-md"
               />
               <div className="absolute -top-2 -right-2 text-yellow-400 animate-pulse text-sm">✨</div>
@@ -61,8 +61,8 @@ const PlantArea = ({ isPlanted, plantName, progress, plant }) => {
               <Image 
                 src={growthStage.icon}
                 alt={`${plantName}の成長段階`}
-                width={growthStage.containerClass === "w-20 h-20" ? 60 : 80}
-                height={growthStage.containerClass === "w-20 h-20" ? 60 : 80}
+                width={60} // さらに小さく
+                height={60} // さらに小さく
                 className="object-contain drop-shadow-md"
               />
               <div className="absolute -top-2 -right-2 text-yellow-400 animate-pulse text-sm">✨</div>
