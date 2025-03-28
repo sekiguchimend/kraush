@@ -25,6 +25,8 @@ const PlantConfirmModal = ({ plant, onConfirm, onCancel }) => {
                 width={100}
                 height={100}
                 alt={plant.name}
+                loading="eager"
+
               />
             </div>
           </div>
