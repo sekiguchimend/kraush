@@ -22,8 +22,8 @@ const PlantConfirmModal = ({ plant, onConfirm, onCancel }) => {
             <div className="w-32 h-32 flex items-center justify-center">
               <Image
                 src={plant.imageSrc}
-                width={120}
-                height={120}
+                width={100}
+                height={100}
                 alt={plant.name}
               />
             </div>
