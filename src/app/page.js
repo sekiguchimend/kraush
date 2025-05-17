@@ -196,13 +196,13 @@ export default function Home() {
       {/* ヘッダー */}
       <Header onBack={handleBack} showBackButton={['seedSelection', 'plantingConfirm', 'naming'].includes(gameState)} />
 
-      {/* クエストチャレンジボタンとパネル */}
-      {gameState === 'planted' && (
+      
+      {/* {gameState === 'planted' && (
         <CharacterSelection 
         onSelectCharacter={handleSelectCharacter} 
         coins={coins}
         />
-      )}
+      )} */}
 
       {/* 植物エリア */}
       {/* <PlantArea 
