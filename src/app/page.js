@@ -205,13 +205,13 @@ export default function Home() {
       )}
 
       {/* 植物エリア */}
-      <PlantArea 
+      {/* <PlantArea 
         isPlanted={gameState === 'planted'} 
         plantName={plantName || 'こんにちわ'} 
         progress={plantProgress} 
         plant={selectedPlant} // selectedPlantを渡す
 
-      />
+      /> */}
 
       {/* 操作パネル */}
       <ControlPanel 
